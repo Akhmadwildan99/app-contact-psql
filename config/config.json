@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "wildan",
+    "password": "wildan123",
+    "database": "wildan",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "wildan",
+    "password": "wildan123",
+    "database": "wildan",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "wildan",
+    "password": "wildan123",
+    "database": "wildan",
+    "host": "localhost",
+    "dialect": "postgres"
+  }
+}
