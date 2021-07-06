@@ -93,11 +93,31 @@ app.post('/contact', [
             req.flash('msg', 'Data contact bersail ditambahkan!');
             res.redirect('/contact');
         }).catch(err => {
-            res.status(422).json("Can't create article")
+            res.status(422).json("Can't add contact")
         })
     }
 }
 );
+
+// Proses delete Contact
+app.get('/contact/delete/:nama', (req, res)=>{
+    const contact = Contact.findOne({
+        where: {nama: req.params.nama}
+    });
+    if(!contact){
+        res.status(404);
+        res.send('<h1>404</h1>');
+    } else {
+        Contact.destroy({
+            where: {nama: req.params.nama}
+        }).then((result)=>{
+            req.flash('msg', 'Data contact bersail dihapus!');
+            res.redirect('/contact');
+        }).catch(err=>{
+            res.status(422).json("Can't delete contact")
+        });
+    }
+});
 
 // halaman detail
 app.get('/contact/:nama', async (req, res)=>{
@@ -110,6 +130,8 @@ app.get('/contact/:nama', async (req, res)=>{
         contact,
     });
 });
+
+
 
 app.get('/', (req, res)=>{
     const kariyawan = 
