@@ -99,6 +99,70 @@ app.post('/contact', [
 }
 );
 
+// Halaman Update contact
+app.get('/contact/edit/:nama', async (req, res)=>{
+    const contact = await Contact.findOne({
+        where: {nama: req.params.nama}
+    });
+    res.render('contact-edit',{
+        layout: 'layouts/main-layouts',
+        title: 'Halaman edit contact',
+        contact,
+    });
+});
+
+// Proses ubah contact
+app.post('/contact', [
+    body('nama').custom( async (value, {req})=>{
+        const duplikat = await Contact.findOne({
+            where: {nama: value}
+        });
+        if(value !== req.body.oldName && duplikat){
+            throw new Error('Nama contact sudah digunakan!');
+        }
+        return true;
+    }),
+    check('email', 'Email tidak valid!').isEmail(), 
+    check('nohp', 'No HP tidak valid!').isMobilePhone('id-ID')
+    ], 
+    (req, res)=>{
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        // return res.status(400).json({ errors: errors.array() });
+        res.render('contact-edit',{
+            layout: 'layouts/main-layouts',
+            title: 'Halaman tambah contact',
+            errors: errors.array(),
+            contact: req.body,
+        });
+    } else {
+        // Contact.updateOne(
+        //     {_id: req.body._id},
+        //     {
+        //         $set: {
+        //             nama: req.body.nama,
+        //             email: req.body.email,
+        //             nohp: req.body.nohp,
+        //         }
+        //     }
+        Contact.update({
+           nama: req.body.nama,
+           nohp: req.body.nohp,
+           email: req.body.email, 
+        }, {
+            where: {nama: req.body.nama}
+        }
+        ).then((contact)=>{
+            req.flash('msg', 'Data contact bersail diubah!');
+            res.redirect('/contact');
+        }).catch(err => {
+            res.status(422).json("Can't add contact")
+        })
+        // kirim masage singkat
+    }
+}
+);
+
 // Proses delete Contact
 app.get('/contact/delete/:nama', (req, res)=>{
     const contact = Contact.findOne({
